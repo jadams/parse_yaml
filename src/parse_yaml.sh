@@ -17,7 +17,7 @@
 function parse_yaml {
     unset i
     unset fs
-    local prefix=$2
+    local prefix=${2:-}
     local separator=${3:-_}
 
     local indexfix=-1
@@ -43,8 +43,8 @@ function parse_yaml {
     # awk 2: convert the formatted data to variable assignments
     ###############################################################################
 
-    echo | cat ${1:--} - | \
-    awk -F$fs "{multi=0;
+    echo | cat "${1:--}" - | \
+    awk -F"$fs" "{multi=0;
         if(match(\$0,/$sm\|$sm$/)){multi=1; sub(/$sm\|$sm$/,\"\");}
         if(match(\$0,/$sm>$sm$/)){multi=2; sub(/$sm>$sm$/,\"\");}
         while(multi>0){
@@ -117,7 +117,7 @@ function parse_yaml {
         -e "s|^\($s\)\([^&][^$fs]*\)[\"']$s\$|\1$fs$fs$fs\2|" \
         -e "s|^\($s\)\([^&][^$fs]*\)$s\$|\1$fs$fs$fs\2|" \
         -e "s|$s\$||p" | \
-    awk -F$fs "{
+    awk -F"$fs" "{
         gsub(/\t/,\"        \",\$1);
         if(NF>3){if(value!=\"\"){value = value \" \";}value = value  \$4;}
         else {
